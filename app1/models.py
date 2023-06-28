@@ -17,7 +17,7 @@ class Post(models.Model):
         return self.title
 
 
-class MyModel(models.Model):
+class ModelwithTupleTuple(models.Model):
     MY_CHOICES = (
         ('option1', 'Option 1'),
         ('option2', 'Option 2'),
@@ -29,3 +29,9 @@ class MyModel(models.Model):
         choices=MY_CHOICES,
         default='option1'
     )
+
+
+class ModelTestRandomField(models.Model):
+    name = models.CharField(max_length=100,null= True)
+    age = models.IntegerField()
+    email = models.EmailField()
