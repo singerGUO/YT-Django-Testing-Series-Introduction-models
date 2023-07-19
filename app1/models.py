@@ -35,3 +35,35 @@ class ModelTestRandomField(models.Model):
     name = models.CharField(max_length=100,null= True)
     age = models.IntegerField()
     email = models.EmailField()
+
+class MyCustomField(models.CharField):
+    def from_db_value(self, value, expression, connection):
+        print("from_db_value",value)
+        if value is None:
+            return value
+        return value.upper()  # Convert the value to uppercase during deserialization
+
+    def get_prep_value(self, value):
+        print("get_prep_value", value)
+        if value is None:
+            return value
+        return value.capitalize()  # Capitalize the value for database storage
+
+class MyModel(models.Model):
+   my_field = MyCustomField(max_length=100, null=True)
+
+from django.db import models
+
+class Student(models.Model):
+    name = models.CharField(max_length=20)
+    major = models.ForeignKey('Subject', on_delete=models.CASCADE)
+    minor = models.ForeignKey('Subject', related_name='minor_students', null=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+class Subject(models.Model):
+    name = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.name

@@ -4,4 +4,4 @@ from . import models
 admin.site.register(models.Post)
 admin.site.register(models.ModelwithTupleTuple)
 admin.site.register(models.ModelTestRandomField)
-
+admin.site.register(models.MyModel)

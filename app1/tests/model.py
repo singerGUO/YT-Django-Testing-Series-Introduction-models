@@ -9,7 +9,7 @@ class TestAppModels(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        print('db test')
+        # print('db test')
         # Set up data for the whole TestCase
         testuser = User.objects.create_user(
             username='testuser', password='12345')
@@ -52,9 +52,9 @@ class TestModelBakery(TestCase):
         customer = baker.make('app1.ModelTestRandomField', _fill_optional=True)
 
         # Access the fields and verify the data
-        print(customer.name)  # Randomly generated name
-        print(customer.age)  # Randomly generated age
-        print(customer.email)  # Randomly generated email
+        # print(customer.name)  # Randomly generated name
+        # print(customer.age)  # Randomly generated age
+        # print(customer.email)  # Randomly generated email
 
         # You can also assert specific conditions
         self.assertTrue(customer.name)
@@ -63,9 +63,9 @@ class TestModelBakery(TestCase):
 
         customer2 = baker.make('app1.ModelTestRandomField', _fill_optional=['age', 'email'])
 
-        print(customer2.name)  # Randomly generated name
-        print(customer2.age)  # Randomly generated age
-        print(customer2.email)  # Randomly generated email
+        # print(customer2.name)  # Randomly generated name
+        # print(customer2.age)  # Randomly generated age
+        # print(customer2.email)  # Randomly generated email
 
         self.assertIsNone(customer2.name)
         self.assertIsInstance(customer2.age, int)
@@ -80,4 +80,48 @@ class TestModelwithTupleofTuple(TestCase):
         self.assertEqual(str(instance.my_field), "option2")
         self.assertEqual(str(instance.get_my_field_display()), "Option 2")
     # choices = ModelwithTupleTuple.MY_CHOICES
+
+
+class TestCustomModelField(TestCase):
+    def test_custom_model_field(self):
+        # Create and save a MyModel instance
+        my_instance = MyModel()
+        my_instance.my_field = 'hello'
+        my_instance.save()  # now it is capitalized by get_prep_value in database Hello
+
+        # # Retrieve the MyModel instance from the database
+        retrieved_instance = MyModel.objects.get(
+            id=my_instance.id)  # when we got it from database, Hello is passed in and upper by from from_db_value HELLO
+        print(retrieved_instance.my_field)  # Output: 'HELLO'
+        retrieved_instance = MyModel.objects.get(id=my_instance.id)
+
+
+class TestRelatedName(TestCase):
+    def test_create_without_related_name(self):
+        math = Subject(name="Math")
+        science = Subject(name="Science")
+        engineering = Subject(name="Engineering")
+        math.save()
+        engineering.save()
+        science.save()
+        anthony = Student(name="Athony", major=math)
+        billy = Student(name="Billy", major=math)
+        christina = Student(name="Christina", major=science)
+        anthony.save()
+        billy.save()
+        christina.save()
+        print(math.student_set.all())
+        print(science.student_set.all())
+        print(engineering.student_set.all())
+        anthony = Student.objects.get(pk=1)
+        print(anthony.major)
+        print(anthony.minor)
+
+        science = Subject.objects.get(pk=2)
+        anthony.minor = science
+        anthony.save()
+        print(science.student_set.all())
+        print(science.minor_students.all())
+
+
 
